@@ -8,3 +8,4 @@ The ball rolls randomly at the beginning of the game.
 After every point, you will have an alert and see what the score is.
 
 
+I USED HTML,CSS,JAVASCRİPT AND JQUERY FOR THİS PROJECT.
