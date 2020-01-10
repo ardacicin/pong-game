@@ -1,0 +1,268 @@
+<html>
+<head>
+</head>
+<body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript">
+    (function () {
+    var CSS = {
+        arena: {
+            width: 900,
+            height: 600,
+            background: '#62247B',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            zIndex: '999',
+            transform: 'translate(-50%, -50%)'
+        },
+        ball: {
+            width: 15,
+            height: 15,
+            position: 'absolute',
+            top: 0,
+            left: 350,
+            borderRadius: 50,
+            background: '#C6A62F'
+        },
+        line: {
+            width: 0,
+            height: 600,
+            borderLeft: '2px dashed #C6A62F',
+            position: 'absolute',
+            top: 0,
+            left: '50%'
+        },
+        stick: {
+            width: 12,
+            height: 85,
+            position: 'absolute',
+            background: '#C6A62F'
+        },
+        stick1: {
+            left: 12,
+            top: 150,
+        },
+        stick2: {
+            left:878,
+            top: 150,
+        },
+        skor: {
+            width: 100,
+            height: 50,
+            position: 'absolute',
+            background: '#151211'
+        },
+        skor1: {           
+            left: 200,
+            top: 10,
+            
+        },
+        skor2: {
+            left:600,
+            top: 10,     
+        }
+    };
+
+    var CONSTS = {       //başlangıc
+    	gameSpeed: 10,
+        score1: 0,
+        score2: 0,
+        stick1Speed: 0,
+        stick2Speed: 0,
+        ballTopSpeed: 0 ,
+        ballLeftSpeed: 0,
+        ballAmount : 9
+    };
+  
+    function start() {
+        draw();
+        setEvents();
+        roll();
+        loop();      
+    }
+
+    function draw() {
+        $('<div/>', {id: 'pong-game'}).css(CSS.arena).appendTo('body');
+        $('<div/>', {id: 'pong-line'}).css(CSS.line).appendTo('#pong-game');
+        $('<div/>', {id: 'pong-ball'}).css(CSS.ball).appendTo('#pong-game');
+        $('<div/>', {id: 'stick-1'}).css($.extend(CSS.stick1, CSS.stick))
+        .appendTo('#pong-game');
+        $('<div/>', {id: 'stick-2'}).css($.extend(CSS.stick2, CSS.stick))
+        .appendTo('#pong-game');
+        $('<div/>', {id: 'skor1'}).css($.extend(CSS.skor1, CSS.skor)).appendTo('#pong-game');
+        $('<div/>', {id: 'skor2'}).css($.extend(CSS.skor2, CSS.skor)).appendTo('#pong-game');
+        }
+
+    function setEvents() {
+        $(document).on('keydown', function (e) {
+        
+            if (e.keyCode == 87) {
+                CONSTS.stick1Speed = -30;
+            }
+        });
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 87) {
+                CONSTS.stick1Speed = 0;
+    
+            }
+        });
+        $(document).on('keydown', function (e) {
+            if (e.keyCode == 83) {
+                CONSTS.stick1Speed = 30;
+            }
+        });
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 83) {
+                CONSTS.stick1Speed = 0;
+            }
+        });$(document).on('keydown', function (e) {
+            if (e.keyCode == 38) {
+                CONSTS.stick2Speed = -30;
+            }
+        });
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 38) {
+                CONSTS.stick2Speed = 0;
+            }
+        });
+        $(document).on('keydown', function (e) {
+            if (e.keyCode == 40) {
+                CONSTS.stick2Speed = 30;
+            }
+        });
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 40) {
+                CONSTS.stick2Speed = 0;
+            }
+        });
+        $(document).on('keydown', function (e) {
+            if (e.keyCode == 13) {
+               restart(loop);
+               CONSTS.ballAmount = 9;
+            }
+        })
+        
+        /*
+        function keyDown(e){
+         switch(e.keyCode){
+            case 87:
+                CONSTS.stick1Speed = -66;
+            break;
+            case 83:
+                CONSTS.stick1Speed = 66;
+            break;
+            case 38:
+                CONSTS.stick1Speed = -66;
+            case 40:
+                CONSTS.stick1Speed = 66;
+            break;
+        }
+    }
+        function keyUp(e){
+        switch(e.keyCode){
+            case 87:
+                CONSTS.stick2Speed = 0;
+            break;
+            case 83:
+                CONSTS.stick2Speed = 0;
+            break;
+            case 38:
+                CONSTS.stick2Speed = 0;
+            case 40:
+                CONSTS.stick2Speed = 0;
+            break;
+        }
+    }
+        */
+    }
+    
+    function loop() {
+        window.pongLoop = setInterval(function () {
+            CSS.stick1.top += CONSTS.stick1Speed;
+            if(CSS.stick1.top < 0){
+                CSS.stick1.top = 0;
+            }
+            if(CSS.stick1.top >= 600){
+                CSS.stick1.top = (600 - CSS.stick.height);
+            }
+            CSS.stick2.top += CONSTS.stick2Speed;
+            if(CSS.stick2.top < 0){
+                CSS.stick2.top = 0;
+            }
+            if(CSS.stick2.top >= 600){
+                CSS.stick2.top = (600 - CSS.stick.height);
+            }
+            $('#stick-1').css('top', CSS.stick1.top);
+            $('#stick-2').css('top', CSS.stick2.top);
+            $('#skor1').css('top', CSS.skor1.top);
+            $('#skor2').css('top', CSS.skor2.top);
+
+            CSS.ball.top = CSS.ball.top - CONSTS.ballTopSpeed ;   //topun komple yatak veya dikey gitmesini engeller.
+            CSS.ball.left = CSS.ball.left - CONSTS.ballLeftSpeed;
+                
+            
+            if ((CSS.stick1.left == CSS.ball.left && CSS.stick1.top == CSS.ball.top) || (CSS.stick2.left == CSS.ball.left && CSS.stick2.top == CSS.ball.top)) {   //top çarpınca yön değişiyor
+                CONSTS.ballTopSpeed = CONSTS.ballTopSpeed * -1;
+            }
+
+            if (CSS.ball.top <= 0 || CSS.ball.top >= CSS.arena.height - CSS.ball.height) {    //top arena çizgilerine dokununca dışarı çıkmıyor alana dönüyor
+                CONSTS.ballTopSpeed = CONSTS.ballTopSpeed * -1;
+            }
+
+            $('#pong-ball').css({top: CSS.ball.top,left: CSS.ball.left});
+
+           if (CSS.ball.left <= CSS.stick.width) {  //soldaki oyuncu için topu geri yollar
+                CSS.ball.top > CSS.stick1.top && CSS.ball.top < CSS.stick1.top + CSS.stick.height && (CONSTS.ballLeftSpeed = CONSTS.ballLeftSpeed * -1) || roll(); 
+                CONSTS.score2 = CONSTS.score2 +1;
+                CONSTS.ballAmount = CONSTS.ballAmount - 1 ;
+               // alert("score : " + CONSTS.score1 + " - " + CONSTS.score2 + "Ball Remainig: " + CONSTS.ballA);
+                 console.log(CONSTS.ballAmount);
+                console.log("score : " + CONSTS.score1 + " " + CONSTS.score2);
+            }
+
+            if (CSS.ball.left >= CSS.arena.width - CSS.ball.width - CSS.stick.width) {     //sağdaki oyuncu için topu geri yollar
+                CSS.ball.top > CSS.stick2.top && CSS.ball.top < CSS.stick2.top + CSS.stick.height && (CONSTS.ballLeftSpeed = CONSTS.ballLeftSpeed * -1)|| roll();
+                CONSTS.score1 = CONSTS.score1 +1;
+                CONSTS.ballAmount = CONSTS.ballAmount - 1 ;
+                //alert("score : " + CONSTS.score1 + " - " + CONSTS.score2);
+                console.log(CONSTS.ballAmount);
+                console.log("score : " + CONSTS.score1 + " " + CONSTS.score2);
+            }
+
+
+            if(CONSTS.score1 == 5 || CONSTS.score2 == 5 || CONSTS.ballAmount == 0){
+                gameOver();
+            } 
+           
+        }, CONSTS.gameSpeed);
+    }
+
+       function gameOver(){
+           clearInterval(window.pongLoop);
+           if(CONSTS.score1 == 5){
+            alert("Game Over. Player 1 wins.");
+           } else if(CONSTS.score2 == 5){
+            alert("Game Over. Player 2 wins.")
+           }
+    }
+  
+    function roll() {
+        CSS.ball.top = 0;
+        CSS.ball.left = 450;
+
+        var side = -1;
+
+        if (Math.random() < 0.5) {
+            side = 1;
+        }
+        CONSTS.ballTopSpeed = Math.random() * -2 - 3;
+        CONSTS.ballLeftSpeed = side * (Math.random() * 2 + 3);       
+    }
+    start();
+})();
+    
+
+</script>
+</body>
+</html>
